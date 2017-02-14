@@ -2,9 +2,11 @@ class vagrant {
 
 	$pkgs = ['kubernetes','etcd','flannel','vim-enhanced','nmap','bash-completion']
 
-  $master_svcs = ['etcd.service', 'kube-apiserver', 'kube-controller-manager', 'kube-scheduler', 'flanneld']
+  $master_svcs = ['kube-apiserver', 'kube-controller-manager', 'kube-scheduler', 'flanneld']
 
   $minion_svcs = ['kube-proxy', 'kubelet', 'flanneld', 'docker']
+
+  $flannel_network_script = 'etcd_flanneld_kube_centos_config'
 
   File {
     owner => 'root',
@@ -53,14 +55,30 @@ class vagrant {
     source => '/vagrant/files/flanneld'
   }
 
+  service { 'etcd.service' :
+    subscribe => File['/etc/etcd/etcd.conf'],
+  }
+
+  file { $flannel_network_script :
+    path   => "/root/${etcd_flanneld_kube_centos_config}.sh",
+    mode   => '0755',
+    source => "/vagrant/files/${etcd_flanneld_kube_centos_config}.sh",
+  }
+
+  exec { 'flannel-network' :
+    command => "/root/${etcd_flanneld_kube_centos_config}.sh",
+    require => File['flannel-network-script'],
+    after   => Service['etcd.service'],
+  }
+
   if $::hostname == 'centos1' {
 
     service { $master_svcs :
       subscribe => File[
-      '/etc/etcd/etcd.conf',
       '/etc/kubernetes/apiserver',
       '/etc/kubernetes/config',
       '/etc/sysconfig/flanneld'],
+      after     => Exec['flannel-network'],
     }
  
   } else {
