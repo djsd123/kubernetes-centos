@@ -19,7 +19,7 @@ Vagrant.configure(2) do |config|
     centos.vm.hostname = "centos#{c}.example.com"
     centos.vm.network "private_network", ip: "172.28.128.1#{c}"
     centos.vm.network "forwarded_port", guest: 8080, host:8081, auto_correct: true
-    centos.vm.synced_folder ".", "/vagrant", type: "nfs"
+#    centos.vm.synced_folder ".", "/vagrant", type: "nfs"
     centos.hostmanager.aliases = %w("centos#{c}.localdomain" centos#{c})
     centos.vm.provider "virtualbox" do |v|
       v.memory = 1024

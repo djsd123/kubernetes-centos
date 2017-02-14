@@ -30,29 +30,33 @@ class vagrant {
   }
 
   package { $pkgs :
-    ensure  => installed,
-    require => [File['repo'],Package['epel-release']],
+    ensure        => installed,
+    require       => [File['repo'],Package['epel-release']],
     allow_virtual => false,
   }
 
   file { '/etc/kubernetes/config' :
-    ensure => link,
-    source => '/vagrant/files/config',
+    ensure  => link,
+    target  => '/vagrant/files/config',
+    require => Package[$pkgs],
   }
 
   file { '/etc/kubernetes/apiserver' :
-    ensure => link,
-    source => '/vagrant/files/apiserver',
+    ensure  => link,
+    target  => '/vagrant/files/apiserver',
+    require => Package[$pkgs],
   }
 
   file { '/etc/etcd/etcd.conf' :
-    ensure => link,
-    source => '/vagrant/files/etcd.conf',
+    ensure  => link,
+    target  => '/vagrant/files/etcd.conf',
+    require => Package[$pkgs],
   }
 
   file { '/etc/sysconfig/flanneld' :
-    ensure => link,
-    source => '/vagrant/files/flanneld'
+    ensure  => link,
+    target  => '/vagrant/files/flanneld',
+    require => Package[$pkgs],
   }
 
   service { 'etcd.service' :
@@ -60,15 +64,15 @@ class vagrant {
   }
 
   file { $flannel_network_script :
-    path   => "/root/${etcd_flanneld_kube_centos_config}.sh",
+    path   => "/root/${flannel_network_script}.sh",
     mode   => '0755',
-    source => "/vagrant/files/${etcd_flanneld_kube_centos_config}.sh",
+    source => "/vagrant/files/${flannel_network_script}.sh",
   }
 
   exec { 'flannel-network' :
-    command => "/root/${etcd_flanneld_kube_centos_config}.sh",
-    require => File['flannel-network-script'],
-    after   => Service['etcd.service'],
+    command => "/root/${flannel_network_script}.sh",
+    returns => [0,4],
+    require => [File[$flannel_network_script],Service['etcd.service']],
   }
 
   if $::hostname == 'centos1' {
@@ -78,14 +82,15 @@ class vagrant {
       '/etc/kubernetes/apiserver',
       '/etc/kubernetes/config',
       '/etc/sysconfig/flanneld'],
-      after     => Exec['flannel-network'],
+      require   => Exec['flannel-network'],
     }
  
   } else {
 
     file { '/etc/kubernetes/kubelet' :
-      ensure => link,
-      source => '/vagrant/files/kubelet',
+      ensure  => link,
+      target  => '/vagrant/files/kubelet',
+      require => Package[$pkgs],
     }
 
     service { $minion_svcs :
