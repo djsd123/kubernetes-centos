@@ -19,40 +19,11 @@ Vagrant.configure(2) do |config|
     centos.vm.hostname = "centos#{c}.example.com"
     centos.vm.network "private_network", ip: "172.28.128.1#{c}"
     centos.vm.network "forwarded_port", guest: 8080, host:8081, auto_correct: true
-#    centos.vm.synced_folder ".", "/vagrant", type: "nfs"
     centos.hostmanager.aliases = %w("centos#{c}.localdomain" centos#{c})
     centos.vm.provider "virtualbox" do |v|
       v.memory = 1024
- #     v.gui = true
     end
    end 
-  end  
-  
-  (1..3).each do |u|
-   config.vm.define "trusty#{u}" do |ubuntu|
-    ubuntu.vm.box = "ubuntu/trusty64"
-    ubuntu.vm.hostname = "trusty#{u}.example.com"
-    ubuntu.vm.network "private_network", ip: "172.28.128.2#{u}"
-#    ubuntu.vm.network "forwarded_port", guest: 8080, host: 8080
-    ubuntu.vm.synced_folder ".", "/vagrant", type: "nfs"
-    ubuntu.hostmanager.aliases = %w(trusty#{u}.localdomain trusty#{u})
-    ubuntu.vm.provider "virtualbox" do |v|
-      v.memory = 1024
-    end
-   end
   end
-
-  config.vm.define "xenial1" do |ubuntu|
-    ubuntu.vm.box = "ubuntu/xenial64"
-    ubuntu.vm.hostname = "xenial1.example.com"
-    ubuntu.vm.network "private_network", type: "dhcp"
-    ubuntu.vm.network "forwarded_port", guest: 8080, host: 8080
-    ubuntu.vm.synced_folder ".", "/vagrant", type: "nfs"
-    ubuntu.vm.provider "virtualbox" do |v|
-      v.memory = 1024
-    end
-
-  end 
-
 
 end
