@@ -1,6 +1,14 @@
 # kubernetes-centos
 #####vagrant kubernetes cluster on centos 7.0
 
+###Vagrant plugins
+```
+puppet
+vagrant-cachier
+vagrant-hostmanager
+vagrant-vbguest
+```
+
 Usage
 =====
 
