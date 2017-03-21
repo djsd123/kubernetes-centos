@@ -1,7 +1,7 @@
 # kubernetes-centos
-#####vagrant kubernetes cluster on centos 7.0
+##### vagrant kubernetes cluster on centos 7.0
 
-###Vagrant plugins
+### Vagrant plugins
 ```
 puppet
 vagrant-cachier
