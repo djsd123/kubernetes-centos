@@ -29,7 +29,7 @@ Provision Cluster
 vagrant provision
 ```
 
-Configure the Kubernetes client like so:
+Configure the `Kubectl` client from the command line of your vagrant vms like so (optional):
 ```
 kubectl config set-cluster default-cluster --server=http://centos1.example.com:8080
 kubectl config set-context default-context --cluster=default-cluster --user=default-admin
